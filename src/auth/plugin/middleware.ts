@@ -1,15 +1,9 @@
 import { Elysia } from "elysia";
-import { jwt } from "@elysiajs/jwt";
+import { jwtService } from "./jwt";
 import { bearer } from "@elysiajs/bearer";
 
 export const authenticated = new Elysia({ name: "auth-plugin" })
-  .use(
-    jwt({
-      name: "jwt",
-      secret: "12345678",
-      exp: "7d",
-    })
-  )
+  .use(jwtService)
   .use(bearer())
   .macro({
     requireAuth: {

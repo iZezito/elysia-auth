@@ -9,7 +9,6 @@ export const UserPlain = t.Object(
     id: t.Integer(),
     name: t.String(),
     email: t.String(),
-    password: t.String(),
     oauth2Provider: __nullable__(t.String()),
     emailVerified: __nullable__(t.Boolean()),
     twoFactorAuthenticationEnabled: __nullable__(t.Boolean()),

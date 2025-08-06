@@ -2,15 +2,10 @@ import { Elysia } from "elysia";
 import { authSchema } from "./model";
 import { AuthService } from "./service";
 import jwt from "@elysiajs/jwt";
+import { jwtService } from "./plugin/jwt";
 
 export const authController = new Elysia({ prefix: "/auth" })
-  .use(
-    jwt({
-      name: "jwt",
-      secret: "12345678",
-      exp: "7d",
-    })
-  )
+  .use(jwtService)
   .post(
     "/login",
     async ({ body, jwt }) => {

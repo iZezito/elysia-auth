@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator prismabox {
+  provider                    = "prismabox"
+  typeboxImportDependencyName = "elysia"
+  typeboxImportVariableName   = "t"
+  inputModel                  = true
+  output                      = "../generated/prismabox"
+}
+
+model User {
+  id                             Int      @id @default(autoincrement())
+  name                           String
+  email                          String   @unique
+  password                       String
+  oauth2Provider                 String?
+  emailVerified                  Boolean? @default(false)
+  twoFactorAuthenticationEnabled Boolean? @default(false)
+
+  posts Post[]
+}
+
+model Post {
+  id       Int     @id @default(autoincrement())
+  title    String?
+  authorId Int
+  author   User    @relation(fields: [authorId], references: [id])
+}

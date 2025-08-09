@@ -25,7 +25,10 @@ model User {
   emailVerified                  Boolean? @default(false)
   twoFactorAuthenticationEnabled Boolean? @default(false)
 
-  posts Post[]
+  posts                   Post[]
+  emailVerification       EmailVerification?
+  passwordResetToken      PasswordResetToken?
+  twoFactorAuthentication TwoFactorAuthentication?
 }
 
 model Post {
@@ -33,4 +36,40 @@ model Post {
   title    String?
   authorId Int
   author   User    @relation(fields: [authorId], references: [id])
+}
+
+model EmailVerification {
+  id                Int      @id @default(autoincrement())
+  verificationToken String   @unique
+  expiryDate        DateTime
+
+  // Relacionamento 1-para-1 com User
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verifications")
+}
+
+model PasswordResetToken {
+  id         Int      @id @default(autoincrement())
+  token      String
+  expiryDate DateTime
+
+  // Relacionamento 1-para-1 opcional com User
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model TwoFactorAuthentication {
+  id         Int      @id @default(autoincrement())
+  code       String
+  expiryDate DateTime
+
+  // Relacionamento 1-para-1 com User
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factor_authentication")
 }

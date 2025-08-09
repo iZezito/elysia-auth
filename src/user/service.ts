@@ -1,5 +1,5 @@
 import { PrismaClient } from "../../generated/prisma";
-import { password } from "bun";
+import { password, randomUUIDv7 } from "bun";
 import { NotFoundError, Static } from "elysia";
 import type {
   UserInputCreate,
@@ -22,11 +22,16 @@ export abstract class UserService {
       algorithm: "bcrypt",
       cost: 10,
     });
-    const entity = { ...user, password: bcryptHash };
     return prisma.user.create({
-      data: entity,
+      data: {
+        ...user,
+        emailVerified: false,
+        password: bcryptHash,
+      },
     });
   }
+
+  static async updatePassword(userId: number, newPassword: string) {}
 
   static async findById(id: number) {
     return prisma.user.findUnique({
@@ -52,5 +57,74 @@ export abstract class UserService {
         twoFactorAuthenticationEnabled: body.twoFactorAuthenticationEnabled,
       },
     });
+  }
+
+  static async createVerificatioEmailToken(userId: number) {
+    const verificationToken = randomUUIDv7();
+    await prisma.emailVerification.create({
+      data: {
+        verificationToken,
+        userId,
+        expiryDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      },
+    });
+    return verificationToken;
+  }
+
+  static async createPasswordResetToken(userId: number) {
+    const token = randomUUIDv7();
+    await prisma.passwordResetToken.create({
+      data: {
+        token,
+        userId,
+        expiryDate: new Date(new Date().getTime() + 1 * 60 * 60 * 1000),
+      },
+    });
+    return token;
+  }
+
+  static async findByEmail(email: string) {
+    return await prisma.user.findUnique({ where: { email } });
+  }
+
+  static async validateEmail(token: string) {
+    const emailVerification = await prisma.emailVerification
+      .findUniqueOrThrow({
+        where: {
+          verificationToken: token,
+        },
+      })
+      .catch(() => {
+        throw new Error("Email verification not found for this token");
+      });
+
+    if (
+      emailVerification !== null &&
+      emailVerification.expiryDate > new Date()
+    ) {
+      await prisma.user.update({
+        where: { id: emailVerification.userId },
+        data: {
+          emailVerified: true,
+        },
+      });
+      await prisma.emailVerification.delete({
+        where: { id: emailVerification.id },
+      });
+      return true;
+    }
+    return false;
+  }
+
+  static async findByToken(token: string) {
+    return await prisma.passwordResetToken
+      .findFirstOrThrow({
+        where: {
+          token,
+        },
+      })
+      .catch(() => {
+        throw new NotFoundError();
+      });
   }
 }

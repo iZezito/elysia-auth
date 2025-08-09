@@ -136,6 +136,27 @@ exports.Prisma.PostScalarFieldEnum = {
   authorId: 'authorId'
 };
 
+exports.Prisma.EmailVerificationScalarFieldEnum = {
+  id: 'id',
+  verificationToken: 'verificationToken',
+  expiryDate: 'expiryDate',
+  userId: 'userId'
+};
+
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  expiryDate: 'expiryDate',
+  userId: 'userId'
+};
+
+exports.Prisma.TwoFactorAuthenticationScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  expiryDate: 'expiryDate',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -154,7 +175,10 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Post: 'Post'
+  Post: 'Post',
+  EmailVerification: 'EmailVerification',
+  PasswordResetToken: 'PasswordResetToken',
+  TwoFactorAuthentication: 'TwoFactorAuthentication'
 };
 
 /**

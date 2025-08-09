@@ -17,7 +17,7 @@ const app = new Elysia()
   .use(swagger())
   .use(userController)
   .use(authController)
-  .get("/", () => "Hello Elysia")
+  .get("/", () => "Email validado! SKKKSK")
   .listen(3000);
 
 console.log(

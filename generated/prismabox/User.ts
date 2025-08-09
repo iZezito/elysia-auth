@@ -9,6 +9,11 @@ export const UserPlain = t.Object(
     id: t.Integer(),
     name: t.String(),
     email: t.String(),
+    password: t.Optional(
+      t.String({
+        minLength: 6,
+      })
+    ),
     oauth2Provider: __nullable__(t.String()),
     emailVerified: __nullable__(t.Boolean()),
     twoFactorAuthenticationEnabled: __nullable__(t.Boolean()),
@@ -28,6 +33,39 @@ export const UserRelations = t.Object(
         { additionalProperties: false }
       ),
       { additionalProperties: false }
+    ),
+    emailVerification: __nullable__(
+      t.Object(
+        {
+          id: t.Integer(),
+          verificationToken: t.String(),
+          expiryDate: t.Date(),
+          userId: t.Integer(),
+        },
+        { additionalProperties: false }
+      )
+    ),
+    passwordResetToken: __nullable__(
+      t.Object(
+        {
+          id: t.Integer(),
+          token: t.String(),
+          expiryDate: t.Date(),
+          userId: __nullable__(t.Integer()),
+        },
+        { additionalProperties: false }
+      )
+    ),
+    twoFactorAuthentication: __nullable__(
+      t.Object(
+        {
+          id: t.Integer(),
+          code: t.String(),
+          expiryDate: t.Date(),
+          userId: t.Integer(),
+        },
+        { additionalProperties: false }
+      )
     ),
   },
   { additionalProperties: false }
@@ -77,6 +115,45 @@ export const UserRelationsInputCreate = t.Object(
         { additionalProperties: false }
       )
     ),
+    emailVerification: t.Optional(
+      t.Object(
+        {
+          connect: t.Object(
+            {
+              id: t.Integer({ additionalProperties: false }),
+            },
+            { additionalProperties: false }
+          ),
+        },
+        { additionalProperties: false }
+      )
+    ),
+    passwordResetToken: t.Optional(
+      t.Object(
+        {
+          connect: t.Object(
+            {
+              id: t.Integer({ additionalProperties: false }),
+            },
+            { additionalProperties: false }
+          ),
+        },
+        { additionalProperties: false }
+      )
+    ),
+    twoFactorAuthentication: t.Optional(
+      t.Object(
+        {
+          connect: t.Object(
+            {
+              id: t.Integer({ additionalProperties: false }),
+            },
+            { additionalProperties: false }
+          ),
+        },
+        { additionalProperties: false }
+      )
+    ),
   },
   { additionalProperties: false }
 );
@@ -105,6 +182,48 @@ export const UserRelationsInputUpdate = t.Partial(
               ),
               { additionalProperties: false }
             ),
+          },
+          { additionalProperties: false }
+        )
+      ),
+      emailVerification: t.Partial(
+        t.Object(
+          {
+            connect: t.Object(
+              {
+                id: t.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false }
+            ),
+            disconnect: t.Boolean(),
+          },
+          { additionalProperties: false }
+        )
+      ),
+      passwordResetToken: t.Partial(
+        t.Object(
+          {
+            connect: t.Object(
+              {
+                id: t.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false }
+            ),
+            disconnect: t.Boolean(),
+          },
+          { additionalProperties: false }
+        )
+      ),
+      twoFactorAuthentication: t.Partial(
+        t.Object(
+          {
+            connect: t.Object(
+              {
+                id: t.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false }
+            ),
+            disconnect: t.Boolean(),
           },
           { additionalProperties: false }
         )
@@ -196,6 +315,9 @@ export const UserSelect = t.Partial(
       emailVerified: t.Boolean(),
       twoFactorAuthenticationEnabled: t.Boolean(),
       posts: t.Boolean(),
+      emailVerification: t.Boolean(),
+      passwordResetToken: t.Boolean(),
+      twoFactorAuthentication: t.Boolean(),
       _count: t.Boolean(),
     },
     { additionalProperties: false }
@@ -204,7 +326,13 @@ export const UserSelect = t.Partial(
 
 export const UserInclude = t.Partial(
   t.Object(
-    { posts: t.Boolean(), _count: t.Boolean() },
+    {
+      posts: t.Boolean(),
+      emailVerification: t.Boolean(),
+      passwordResetToken: t.Boolean(),
+      twoFactorAuthentication: t.Boolean(),
+      _count: t.Boolean(),
+    },
     { additionalProperties: false }
   )
 );

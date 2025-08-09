@@ -18,7 +18,7 @@ const prisma = new PrismaClient({
 
 export abstract class UserService {
   static async save(user: UserCreate) {
-    const bcryptHash = await Bun.password.hash(user.password, {
+    const bcryptHash = await password.hash(user.password, {
       algorithm: "bcrypt",
       cost: 10,
     });
@@ -31,7 +31,18 @@ export abstract class UserService {
     });
   }
 
-  static async updatePassword(userId: number, newPassword: string) {}
+  static async updatePassword(userId: number, newPassword: string) {
+    const bcryptHash = await password.hash(newPassword, {
+      algorithm: "bcrypt",
+      cost: 10,
+    });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: bcryptHash,
+      },
+    });
+  }
 
   static async findById(id: number) {
     return prisma.user.findUnique({

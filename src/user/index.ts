@@ -127,8 +127,10 @@ export const userController = new Elysia({ prefix: "/users" })
       }
 
       if (resetToken.userId !== null) {
-        UserService.updatePassword()
+        await UserService.updatePassword(resetToken.userId, newPassword);
       }
+
+      return "Password changed successfully.";
     },
     {
       query: t.Object({

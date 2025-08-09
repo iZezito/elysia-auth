@@ -106,7 +106,7 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw new Error("Email verification not found for this token");
+        throw new NotFoundError("Email verification not found for this token");
       });
 
     if (
@@ -135,7 +135,7 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw new NotFoundError();
+        throw new NotFoundError("Password Reset not found for this token");
       });
   }
 }

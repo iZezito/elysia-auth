@@ -4,6 +4,7 @@ import {
   UserInputUpdate,
   UserPlain,
   UserPlainInputCreate,
+  UserPlainInputUpdate,
 } from "../../generated/prismabox/User";
 import { UserService } from "./service";
 import { authenticated } from "../auth/plugin/middleware";
@@ -18,7 +19,9 @@ export const userController = new Elysia({ prefix: "/users" })
     "",
     async ({ body }) => {
       const userEntity = await UserService.save(body);
-      const token = UserService.createVerificatioEmailToken(userEntity.id);
+      const token = await UserService.createVerificatioEmailToken(
+        userEntity.id
+      );
       const html = renderVerifyEmail(
         `${process.env.CLIENT_URL}/validate-email?token=${token}`
       );
@@ -34,13 +37,14 @@ export const userController = new Elysia({ prefix: "/users" })
   .put(
     "/:id",
     async ({ status, body, user, params: { id } }) => {
+      console.log("chegou");
       if (id !== user.userId) return status(401);
 
-      return UserService.update(body, user.userId);
+      return await UserService.update(body, user.userId);
     },
     {
       requireAuth: true,
-      body: UserInputUpdate,
+      body: UserPlainInputUpdate,
       params: t.Object({
         id: t.Number(),
       }),
@@ -88,9 +92,7 @@ export const userController = new Elysia({ prefix: "/users" })
     },
     {
       query: t.Object({
-        token: t.String({
-          format: "email",
-        }),
+        token: t.String(),
       }),
     }
   )

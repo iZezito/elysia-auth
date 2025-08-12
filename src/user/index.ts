@@ -7,14 +7,13 @@ import {
   UserPlainInputUpdate,
 } from "../../generated/prismabox/User";
 import { UserService } from "./service";
-import { authenticated } from "../auth/plugin/middleware";
+import { auth } from "../auth/plugin/middleware";
 import { sendMail } from "../lib/mail";
 import { renderResetPasswordEmail, renderVerifyEmail } from "../emails/render";
 
 const prisma = new PrismaClient();
 
 export const userController = new Elysia({ prefix: "/users" })
-  .use(authenticated)
   .post(
     "",
     async ({ body }) => {
@@ -32,40 +31,6 @@ export const userController = new Elysia({ prefix: "/users" })
     {
       body: UserPlainInputCreate,
       response: UserPlain,
-    }
-  )
-  .put(
-    "/:id",
-    async ({ status, body, user, params: { id } }) => {
-      console.log("chegou");
-      if (id !== user.userId) return status(401);
-
-      return await UserService.update(body, user.userId);
-    },
-    {
-      requireAuth: true,
-      body: UserPlainInputUpdate,
-      params: t.Object({
-        id: t.Number(),
-      }),
-    }
-  )
-  .get(
-    "",
-    async ({ status, user }) => {
-      console.log(user);
-      const usuario = await UserService.findById(+user.userId);
-
-      if (!usuario) return status(404, "User not found");
-
-      return usuario;
-    },
-    {
-      requireAuth: true,
-      response: {
-        200: UserPlain,
-        404: t.String(),
-      },
     }
   )
   .get(
@@ -141,5 +106,38 @@ export const userController = new Elysia({ prefix: "/users" })
         }),
         token: t.String(),
       }),
+    }
+  )
+  .use(auth)
+  .put(
+    "/:id",
+    async ({ status, body, user, params: { id } }) => {
+      console.log("chegou");
+      if (id !== user.userId) return status(401);
+
+      return await UserService.update(body, user.userId);
+    },
+    {
+      body: UserPlainInputUpdate,
+      params: t.Object({
+        id: t.Number(),
+      }),
+    }
+  )
+  .get(
+    "",
+    async ({ status, user }) => {
+      console.log(user);
+      const usuario = await UserService.findById(+user.userId);
+
+      if (!usuario) return status(404, "User not found");
+
+      return usuario;
+    },
+    {
+      response: {
+        200: UserPlain,
+        404: t.String(),
+      },
     }
   );

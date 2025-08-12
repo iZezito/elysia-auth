@@ -1,11 +1,6 @@
 import { PrismaClient } from "../../generated/prisma";
 import { password, randomUUIDv7 } from "bun";
-import { NotFoundError, Static } from "elysia";
-import type {
-  UserInputCreate,
-  UserPlain,
-  UserPlainInputCreate,
-} from "../../generated/prismabox/User";
+import { NotFoundError, status } from "elysia";
 import type { UserCreate, UserUpdate } from "./model";
 
 const prisma = new PrismaClient({
@@ -45,9 +40,13 @@ export abstract class UserService {
   }
 
   static async findById(id: number) {
-    return prisma.user.findUnique({
-      where: { id },
-    });
+    return prisma.user
+      .findUniqueOrThrow({
+        where: { id },
+      })
+      .catch(() => {
+        throw status(404, "User not found!");
+      });
   }
 
   static async update(body: UserUpdate, userId: number) {

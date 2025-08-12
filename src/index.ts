@@ -9,15 +9,15 @@ import { authController } from "./auth";
 const app = new Elysia()
   .use(
     cors({
-      origin: true,
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true,
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   )
   .use(swagger())
   .use(userController)
   .use(authController)
-  .get("/", () => "Email validado! SKKKSK")
   .listen(3000);
 
 console.log(

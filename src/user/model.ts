@@ -5,6 +5,6 @@ import type {
   UserPlainInputCreate,
 } from "../../generated/prismabox/User";
 
-export type UserCreate = Static<typeof UserPlainInputCreate>;
-export type UserUpdate = Static<typeof UserInputUpdate>;
-export type User = Static<typeof UserPlain>;
+export type UserCreate = typeof UserPlainInputCreate.static;
+export type UserUpdate = typeof UserInputUpdate.static;
+export type User = typeof UserPlain.static;

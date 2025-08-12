@@ -37,7 +37,27 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
         }
       },
     },
-  })
-  .get("/sign/:name", async ({ jwt, params: { name } }) => {
-    return jwt.sign({ name });
+  });
+
+export const auth = new Elysia()
+  .use(jwtService)
+  .use(bearer())
+  .derive({ as: "scoped" }, async ({ bearer, jwt, status }) => {
+    if (!bearer) {
+      return status(401, {
+        error: "Token de autenticação não fornecido",
+        message:
+          "É necessário fornecer um token Bearer no header Authorization",
+      });
+    }
+    const payload = await jwt.verify(bearer);
+
+    if (!payload) {
+      return status(401, {
+        error: "Token inválido",
+        message: "O token fornecido é inválido ou expirou",
+      });
+    }
+
+    return { user: payload };
   });

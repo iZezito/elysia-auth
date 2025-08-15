@@ -16,10 +16,16 @@ generator prismabox {
   output                      = "../generated/prismabox"
 }
 
+enum UserRole {
+  DEFAULT
+  ADMIN
+}
+
 model User {
   id                             Int      @id @default(autoincrement())
   name                           String
   email                          String   @unique
+  role                           UserRole @default(DEFAULT)
   password                       String
   oauth2Provider                 String?
   emailVerified                  Boolean? @default(false)
@@ -43,7 +49,6 @@ model EmailVerification {
   verificationToken String   @unique
   expiryDate        DateTime
 
-  // Relacionamento 1-para-1 com User
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

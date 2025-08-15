@@ -12,6 +12,7 @@ const prisma = new PrismaClient({
 });
 
 export abstract class UserService {
+
   static async save(user: UserCreate) {
     const bcryptHash = await password.hash(user.password, {
       algorithm: "bcrypt",

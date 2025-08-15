@@ -9,6 +9,9 @@ export const UserPlain = t.Object(
     id: t.Integer(),
     name: t.String(),
     email: t.String(),
+    role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+      additionalProperties: false,
+    }),
     password: t.Optional(
       t.String({
         minLength: 6,
@@ -75,6 +78,11 @@ export const UserPlainInputCreate = t.Object(
   {
     name: t.String(),
     email: t.String(),
+    role: t.Optional(
+      t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+        additionalProperties: false,
+      })
+    ),
     password: t.String({
       minLength: 6,
     }),
@@ -89,6 +97,11 @@ export const UserPlainInputUpdate = t.Object(
   {
     name: t.Optional(t.String()),
     email: t.Optional(t.String()),
+    role: t.Optional(
+      t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+        additionalProperties: false,
+      })
+    ),
     password: t.Optional(t.String()),
     oauth2Provider: t.Optional(__nullable__(t.String())),
     emailVerified: t.Optional(__nullable__(t.Boolean())),
@@ -244,6 +257,9 @@ export const UserWhere = t.Partial(
           id: t.Integer(),
           name: t.String(),
           email: t.String(),
+          role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+            additionalProperties: false,
+          }),
           password: t.String(),
           oauth2Provider: t.String(),
           emailVerified: t.Boolean(),
@@ -290,6 +306,9 @@ export const UserWhereUnique = t.Recursive(
               id: t.Integer(),
               name: t.String(),
               email: t.String(),
+              role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+                additionalProperties: false,
+              }),
               password: t.String(),
               oauth2Provider: t.String(),
               emailVerified: t.Boolean(),
@@ -310,6 +329,7 @@ export const UserSelect = t.Partial(
       id: t.Boolean(),
       name: t.Boolean(),
       email: t.Boolean(),
+      role: t.Boolean(),
       password: t.Boolean(),
       oauth2Provider: t.Boolean(),
       emailVerified: t.Boolean(),
@@ -327,6 +347,7 @@ export const UserSelect = t.Partial(
 export const UserInclude = t.Partial(
   t.Object(
     {
+      role: t.Boolean(),
       posts: t.Boolean(),
       emailVerification: t.Boolean(),
       passwordResetToken: t.Boolean(),

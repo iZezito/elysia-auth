@@ -6,7 +6,7 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
   .use(jwtService)
   .use(bearer())
   .macro({
-    requireAuth: {
+    requireAdmin: {
       async resolve({ bearer, jwt, status }) {
         if (!bearer) {
           return status(401, {
@@ -25,7 +25,14 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
               message: "O token fornecido é inválido ou expirou",
             });
           }
+          console.log("role: ", payload.role);
 
+          if (payload.role !== "ADMIN") {
+            return status(401, {
+              error: "Unauthorized",
+              message: "Vc não possui acesso a esse recurso",
+            });
+          }
           return {
             user: payload,
           };

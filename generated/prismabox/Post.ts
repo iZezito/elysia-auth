@@ -16,6 +16,9 @@ export const PostRelations = t.Object(
         id: t.Integer(),
         name: t.String(),
         email: t.String(),
+        role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
+          additionalProperties: false,
+        }),
         password: t.String(),
         oauth2Provider: __nullable__(t.String()),
         emailVerified: __nullable__(t.Boolean()),

@@ -7,7 +7,7 @@ import {
   UserPlainInputUpdate,
 } from "../../generated/prismabox/User";
 import { UserService } from "./service";
-import { auth } from "../auth/plugin/middleware";
+import { auth, authenticated } from "../auth/plugin/middleware";
 import { sendMail } from "../lib/mail";
 import { renderResetPasswordEmail, renderVerifyEmail } from "../emails/render";
 
@@ -31,6 +31,19 @@ export const userController = new Elysia({ prefix: "/users" })
     {
       body: UserPlainInputCreate,
       response: UserPlain,
+    }
+  )
+  .use(authenticated)
+  .get(
+    "/:id",
+    async ({ params: { id } }) => {
+      return await UserService.findById(id);
+    },
+    {
+      requireAdmin: true,
+      params: t.Object({
+        id: t.Number(),
+      }),
     }
   )
   .get(

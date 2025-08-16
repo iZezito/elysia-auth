@@ -10,9 +10,9 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
       async resolve({ bearer, jwt, status }) {
         if (!bearer) {
           return status(401, {
-            error: "Token de autenticação não fornecido",
+            error: "Authentication token not provided",
             message:
-              "É necessário fornecer um token Bearer no header Authorization",
+              "You must provide a Bearer token in the Authorization header.",
           });
         }
 
@@ -21,8 +21,8 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
 
           if (!payload) {
             return status(401, {
-              error: "Token inválido",
-              message: "O token fornecido é inválido ou expirou",
+              error: "Invalid token",
+              message: "The token provided is invalid or expired",
             });
           }
           console.log("role: ", payload.role);
@@ -30,7 +30,7 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
           if (payload.role !== "ADMIN") {
             return status(401, {
               error: "Unauthorized",
-              message: "Vc não possui acesso a esse recurso",
+              message: "You do not have access to this feature",
             });
           }
           return {
@@ -38,8 +38,8 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
           };
         } catch (error) {
           return status(401, {
-            error: "Erro na verificação do token",
-            message: "Falha ao verificar o token de autenticação",
+            error: "Error verifying token",
+            message: "Failed to verify authentication token",
           });
         }
       },
@@ -52,17 +52,16 @@ export const auth = new Elysia()
   .derive({ as: "scoped" }, async ({ bearer, jwt, status }) => {
     if (!bearer) {
       return status(401, {
-        error: "Token de autenticação não fornecido",
-        message:
-          "É necessário fornecer um token Bearer no header Authorization",
+        error: "Authentication token not provided",
+        message: "You must provide a Bearer token in the Authorization header.",
       });
     }
     const payload = await jwt.verify(bearer);
 
     if (!payload) {
       return status(401, {
-        error: "Token inválido",
-        message: "O token fornecido é inválido ou expirou",
+        error: "Invalid token",
+        message: "The token provided is invalid or expired",
       });
     }
 

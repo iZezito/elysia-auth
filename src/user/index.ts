@@ -10,6 +10,7 @@ import { UserService } from "./service";
 import { auth, authenticated } from "../auth/plugin/middleware";
 import { sendMail } from "../lib/mail";
 import { renderResetPasswordEmail, renderVerifyEmail } from "../emails/render";
+import { isBefore } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -60,7 +61,7 @@ export const userController = new Elysia({ prefix: "/users" })
     }
   )
   .get(
-    "validate-email",
+    "/email-verification",
     async ({ query: { token } }) => {
       const validated = await UserService.validateEmail(token);
       if (validated) {
@@ -75,8 +76,8 @@ export const userController = new Elysia({ prefix: "/users" })
     }
   )
   .post(
-    "forgot-password",
-    async ({ query: { email } }) => {
+    "/password-reset-requests",
+    async ({ body: { email } }) => {
       const userEntity = await UserService.findByEmail(email);
       if (userEntity !== null) {
         const resetToken = await UserService.createPasswordResetToken(
@@ -90,20 +91,20 @@ export const userController = new Elysia({ prefix: "/users" })
       return "If an account with that email address exists, it will receive an email with instructions for resetting its password.";
     },
     {
-      query: t.Object({
+      body: t.Object({
         email: t.String({
           format: "email",
         }),
       }),
     }
   )
-  .post(
-    "password-reset",
-    async ({ status, query: { token, newPassword } }) => {
+  .put(
+    "/password-reset",
+    async ({ status, body: { token, newPassword } }) => {
       const resetToken = await UserService.findByToken(token);
 
-      if (new Date() > resetToken.expiryDate) {
-        status(410, "Token expired.");
+      if (isBefore(resetToken.expiryDate, new Date())) {
+        return status(410, "Token expired.");
       }
 
       if (resetToken.userId !== null) {
@@ -113,7 +114,7 @@ export const userController = new Elysia({ prefix: "/users" })
       return "Password changed successfully.";
     },
     {
-      query: t.Object({
+      body: t.Object({
         newPassword: t.String({
           minLength: 6,
         }),
@@ -125,7 +126,6 @@ export const userController = new Elysia({ prefix: "/users" })
   .put(
     "/:id",
     async ({ status, body, user, params: { id } }) => {
-      console.log("chegou");
       if (id !== user.userId) return status(401);
 
       return await UserService.update(body, user.userId);
@@ -140,7 +140,6 @@ export const userController = new Elysia({ prefix: "/users" })
   .get(
     "",
     async ({ status, user }) => {
-      console.log(user);
       const usuario = await UserService.findById(+user.userId);
 
       if (!usuario) return status(404, "User not found");

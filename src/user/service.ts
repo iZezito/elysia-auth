@@ -1,7 +1,8 @@
 import { PrismaClient } from "../../generated/prisma";
 import { password, randomUUIDv7 } from "bun";
-import { NotFoundError, status } from "elysia";
+import { status } from "elysia";
 import type { UserCreate, UserUpdate } from "./model";
+import { addDays, addHours, isAfter } from "date-fns";
 
 const prisma = new PrismaClient({
   omit: {
@@ -56,7 +57,7 @@ export abstract class UserService {
         where: { id: userId },
       })
       .catch(() => {
-        throw new NotFoundError();
+        throw status(404, "User not found!");
       });
 
     return await prisma.user.update({
@@ -76,7 +77,7 @@ export abstract class UserService {
       data: {
         verificationToken,
         userId,
-        expiryDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+        expiryDate: addDays(new Date(), 1),
       },
     });
     return verificationToken;
@@ -88,7 +89,7 @@ export abstract class UserService {
       data: {
         token,
         userId,
-        expiryDate: new Date(new Date().getTime() + 1 * 60 * 60 * 1000),
+        expiryDate: addHours(new Date(), 1),
       },
     });
     return token;
@@ -106,12 +107,12 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw new NotFoundError("Email verification not found for this token");
+        throw status(404, "Email verification not found for this token");
       });
 
     if (
       emailVerification !== null &&
-      emailVerification.expiryDate > new Date()
+      isAfter(emailVerification.expiryDate, new Date())
     ) {
       await prisma.user.update({
         where: { id: emailVerification.userId },
@@ -135,7 +136,7 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw new NotFoundError("Password Reset not found for this token");
+        throw status(404, "Password Reset not found for this token");
       });
   }
 }

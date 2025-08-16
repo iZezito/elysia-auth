@@ -1,10 +1,11 @@
 import type { AuthBody } from "./model";
 import { PrismaClient } from "../../generated/prisma";
-import { BadCredentials } from "../exceptions/bad-credentials";
 import { password } from "bun";
 import { renderOtpEmail } from "../emails/render";
 import { sendMail } from "../lib/mail";
 import type { User } from "../user/model";
+import { addHours, isAfter } from "date-fns";
+import { status } from "elysia";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,7 @@ export abstract class AuthService {
         where: { email: body.email },
       })
       .catch(() => {
-        throw new BadCredentials();
+        throw status(401, "Invalid credentials. Please check your email and password and try again.");
       });
 
     const verifySenha = await password.verify(
@@ -24,7 +25,7 @@ export abstract class AuthService {
     );
 
     if (!verifySenha) {
-      throw new BadCredentials();
+      throw status(401, "Invalid credentials. Please check your email and password and try again.");
     }
 
     return userEntity;
@@ -44,7 +45,7 @@ export abstract class AuthService {
       data: {
         userId: user.id,
         code,
-        expiryDate: new Date(new Date().getTime() + 2 * 60 * 60 * 1000),
+        expiryDate: addHours(new Date(), 2),
       },
     });
     const html = renderOtpEmail(code);
@@ -59,13 +60,13 @@ export abstract class AuthService {
     const isValid =
       twoFactorAuth &&
       twoFactorAuth.code === code &&
-      twoFactorAuth.expiryDate > new Date();
+      isAfter(twoFactorAuth.expiryDate, new Date());
 
     if (isValid)
-      // TODO: se bugar foi aqui ksksksk
       prisma.twoFactorAuthentication.delete({
         where: { id: twoFactorAuth.id },
       });
     return isValid;
   }
 }
+

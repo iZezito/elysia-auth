@@ -57,10 +57,7 @@ export const authController = new Elysia({ prefix: "/auth" })
   })
   .get(
     "/oauth/google/callback",
-    async ({ query, status, jwt, pkceStore, redirect }) => {
-      const code = query.code as string;
-      const state = query.state as string;
-
+    async ({ query: { code, state }, status, jwt, pkceStore, redirect }) => {
       const sessionData = pkceStore.get(state);
       if (!sessionData) {
         return status(400, { error: "Invalid state" });
@@ -103,5 +100,11 @@ export const authController = new Elysia({ prefix: "/auth" })
         }
         return status(500, { error: "Unexpected error" });
       }
+    },
+    {
+      query: t.Object({
+        code: t.String(),
+        state: t.String(),
+      }),
     }
   );

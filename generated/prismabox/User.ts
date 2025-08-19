@@ -77,7 +77,9 @@ export const UserRelations = t.Object(
 export const UserPlainInputCreate = t.Object(
   {
     name: t.String(),
-    email: t.String(),
+    email: t.String({
+      format: "email",
+    }),
     role: t.Optional(
       t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
         additionalProperties: false,

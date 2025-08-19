@@ -1,12 +1,13 @@
 import { Elysia } from "elysia";
 import { jwtService } from "./jwt";
 import { bearer } from "@elysiajs/bearer";
+import type { UserRole } from "../../../generated/prisma";
 
 export const authenticated = new Elysia({ name: "auth-plugin" })
   .use(jwtService)
   .use(bearer())
   .macro({
-    requireAdmin: {
+    requireRole: (role: UserRole) => ({
       async resolve({ bearer, jwt, status }) {
         if (!bearer) {
           return status(401, {
@@ -27,9 +28,9 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
           }
           console.log("role: ", payload.role);
 
-          if (payload.role !== "ADMIN") {
-            return status(401, {
-              error: "Unauthorized",
+          if (payload.role !== role) {
+            return status(403, {
+              error: "Forbidden",
               message: "You do not have access to this feature",
             });
           }
@@ -43,7 +44,7 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
           });
         }
       },
-    },
+    }),
   });
 
 export const auth = new Elysia()

@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
 export const userController = new Elysia({ prefix: "/users" })
   .post(
     "",
-    async ({ body }) => {
+    async ({ body, status }) => {
       const userEntity = await UserService.save(body);
       const token = await UserService.createVerificatioEmailToken(
         userEntity.id
@@ -27,11 +27,11 @@ export const userController = new Elysia({ prefix: "/users" })
       );
       sendMail(userEntity.email, "Account Verify", html);
 
-      return userEntity;
+      return status(201, userEntity);
     },
     {
       body: UserPlainInputCreate,
-      response: UserPlain,
+      response: { 201: UserPlain },
     }
   )
   .use(authenticated)
@@ -41,7 +41,7 @@ export const userController = new Elysia({ prefix: "/users" })
       return await UserService.findById(id);
     },
     {
-      requireAdmin: true,
+      requireRole: "ADMIN",
       params: t.Object({
         id: t.Number(),
       }),

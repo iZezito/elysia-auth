@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma";
+import { PrismaClient } from "@/generated/prisma";
 import { password, randomUUIDv7 } from "bun";
 import { status } from "elysia";
 import type { UserCreate, UserUpdate } from "./model";
@@ -13,7 +13,6 @@ const prisma = new PrismaClient({
 });
 
 export abstract class UserService {
-
   static async save(user: UserCreate) {
     const bcryptHash = await password.hash(user.password, {
       algorithm: "bcrypt",

@@ -5,8 +5,8 @@ import jwt from "@elysiajs/jwt";
 import { jwtService } from "./plugin/jwt";
 import { auth } from "./plugin/middleware";
 import * as arctic from "arctic";
-import { UserService } from "../user/service";
-import { User } from "../../generated/prismabox/User";
+import { UserService } from "@/modules/user/service";
+import { User } from "@/generated/prismabox/User";
 
 export const authController = new Elysia({ prefix: "/auth" })
   .use(jwtService)

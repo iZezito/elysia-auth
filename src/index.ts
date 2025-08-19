@@ -1,10 +1,8 @@
 import { Elysia } from "elysia";
-import { userController } from "./user";
+import { userController } from "@/modules/user";
 import swagger from "@elysiajs/swagger";
-import jwt from "@elysiajs/jwt";
-import { authenticated } from "./auth/plugin/middleware";
 import cors from "@elysiajs/cors";
-import { authController } from "./auth";
+import { authController } from "@/auth";
 
 const app = new Elysia()
   .use(

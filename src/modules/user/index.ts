@@ -1,15 +1,15 @@
 import { Elysia, t } from "elysia";
-import { PrismaClient } from "../../generated/prisma";
+import { PrismaClient } from "@/generated/prisma";
 import {
   UserInputUpdate,
   UserPlain,
   UserPlainInputCreate,
   UserPlainInputUpdate,
-} from "../../generated/prismabox/User";
+} from "@/generated/prismabox/User";
 import { UserService } from "./service";
-import { auth, authenticated } from "../auth/plugin/middleware";
-import { sendMail } from "../lib/mail";
-import { renderResetPasswordEmail, renderVerifyEmail } from "../emails/render";
+import { auth, authenticated } from "@/auth/plugin/middleware";
+import { sendMail } from "@/lib/mail";
+import { renderResetPasswordEmail, renderVerifyEmail } from "@/emails/render";
 import { isBefore } from "date-fns";
 
 const prisma = new PrismaClient();
@@ -76,7 +76,7 @@ export const userController = new Elysia({ prefix: "/users" })
     }
   )
   .post(
-    "/password-reset-requests",
+    "/forgot-password",
     async ({ body: { email } }) => {
       const userEntity = await UserService.findByEmail(email);
       if (userEntity !== null) {
@@ -126,7 +126,7 @@ export const userController = new Elysia({ prefix: "/users" })
   .put(
     "/:id",
     async ({ status, body, user, params: { id } }) => {
-      if (id !== user.userId) return status(401);
+      if (id !== user.userId) return status(403);
 
       return await UserService.update(body, user.userId);
     },

@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { jwtService } from "./jwt";
 import { bearer } from "@elysiajs/bearer";
-import type { UserRole } from "../../../generated/prisma";
+import type { UserRole } from "@/generated/prisma";
 
 export const authenticated = new Elysia({ name: "auth-plugin" })
   .use(jwtService)

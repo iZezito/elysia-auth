@@ -11,6 +11,11 @@ export const authSchema = t.Object({
   codeOTP: t.Optional(t.String()),
 });
 
+export type AuthContext = {
+  id: string;
+  role: string;
+};
+
 export type AuthBody = Static<typeof authSchema>;
 
 export const google = new Google(

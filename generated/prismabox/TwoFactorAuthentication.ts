@@ -9,7 +9,7 @@ export const TwoFactorAuthenticationPlain = t.Object(
     id: t.Integer(),
     code: t.String(),
     expiryDate: t.Date(),
-    userId: t.Integer(),
+    userId: t.String(),
   },
   { additionalProperties: false },
 );
@@ -18,7 +18,7 @@ export const TwoFactorAuthenticationRelations = t.Object(
   {
     user: t.Object(
       {
-        id: t.Integer(),
+        id: t.String(),
         name: t.String(),
         email: t.String(),
         role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
@@ -51,7 +51,7 @@ export const TwoFactorAuthenticationRelationsInputCreate = t.Object(
       {
         connect: t.Object(
           {
-            id: t.Integer({ additionalProperties: false }),
+            id: t.String({ additionalProperties: false }),
           },
           { additionalProperties: false },
         ),
@@ -69,7 +69,7 @@ export const TwoFactorAuthenticationRelationsInputUpdate = t.Partial(
         {
           connect: t.Object(
             {
-              id: t.Integer({ additionalProperties: false }),
+              id: t.String({ additionalProperties: false }),
             },
             { additionalProperties: false },
           ),
@@ -92,7 +92,7 @@ export const TwoFactorAuthenticationWhere = t.Partial(
           id: t.Integer(),
           code: t.String(),
           expiryDate: t.Date(),
-          userId: t.Integer(),
+          userId: t.String(),
         },
         { additionalProperties: false },
       ),
@@ -106,13 +106,13 @@ export const TwoFactorAuthenticationWhereUnique = t.Recursive(
       [
         t.Partial(
           t.Object(
-            { id: t.Integer(), userId: t.Integer() },
+            { id: t.Integer(), userId: t.String() },
             { additionalProperties: false },
           ),
           { additionalProperties: false },
         ),
         t.Union(
-          [t.Object({ id: t.Integer() }), t.Object({ userId: t.Integer() })],
+          [t.Object({ id: t.Integer() }), t.Object({ userId: t.String() })],
           { additionalProperties: false },
         ),
         t.Partial(
@@ -135,7 +135,7 @@ export const TwoFactorAuthenticationWhereUnique = t.Recursive(
               id: t.Integer(),
               code: t.String(),
               expiryDate: t.Date(),
-              userId: t.Integer(),
+              userId: t.String(),
             },
             { additionalProperties: false },
           ),

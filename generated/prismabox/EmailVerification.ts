@@ -9,7 +9,7 @@ export const EmailVerificationPlain = t.Object(
     id: t.Integer(),
     verificationToken: t.String(),
     expiryDate: t.Date(),
-    userId: t.Integer(),
+    userId: t.String(),
   },
   { additionalProperties: false },
 );
@@ -18,7 +18,7 @@ export const EmailVerificationRelations = t.Object(
   {
     user: t.Object(
       {
-        id: t.Integer(),
+        id: t.String(),
         name: t.String(),
         email: t.String(),
         role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
@@ -54,7 +54,7 @@ export const EmailVerificationRelationsInputCreate = t.Object(
       {
         connect: t.Object(
           {
-            id: t.Integer({ additionalProperties: false }),
+            id: t.String({ additionalProperties: false }),
           },
           { additionalProperties: false },
         ),
@@ -72,7 +72,7 @@ export const EmailVerificationRelationsInputUpdate = t.Partial(
         {
           connect: t.Object(
             {
-              id: t.Integer({ additionalProperties: false }),
+              id: t.String({ additionalProperties: false }),
             },
             { additionalProperties: false },
           ),
@@ -95,7 +95,7 @@ export const EmailVerificationWhere = t.Partial(
           id: t.Integer(),
           verificationToken: t.String(),
           expiryDate: t.Date(),
-          userId: t.Integer(),
+          userId: t.String(),
         },
         { additionalProperties: false },
       ),
@@ -112,7 +112,7 @@ export const EmailVerificationWhereUnique = t.Recursive(
             {
               id: t.Integer(),
               verificationToken: t.String(),
-              userId: t.Integer(),
+              userId: t.String(),
             },
             { additionalProperties: false },
           ),
@@ -122,7 +122,7 @@ export const EmailVerificationWhereUnique = t.Recursive(
           [
             t.Object({ id: t.Integer() }),
             t.Object({ verificationToken: t.String() }),
-            t.Object({ userId: t.Integer() }),
+            t.Object({ userId: t.String() }),
           ],
           { additionalProperties: false },
         ),
@@ -146,7 +146,7 @@ export const EmailVerificationWhereUnique = t.Recursive(
               id: t.Integer(),
               verificationToken: t.String(),
               expiryDate: t.Date(),
-              userId: t.Integer(),
+              userId: t.String(),
             },
             { additionalProperties: false },
           ),

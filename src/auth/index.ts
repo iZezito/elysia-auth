@@ -1,12 +1,9 @@
 import { Elysia, t } from "elysia";
 import { authSchema, google, type GoogleIdTokenClaims } from "./model";
 import { AuthService } from "./service";
-import jwt from "@elysiajs/jwt";
-import { jwtService } from "./plugin/jwt";
-import { auth } from "./plugin/middleware";
+import { jwtService } from "../plugin/jwt";
 import * as arctic from "arctic";
 import { UserService } from "@/modules/user/service";
-import { User } from "@/generated/prismabox/User";
 
 export const authController = new Elysia({ prefix: "/auth" })
   .use(jwtService)
@@ -30,7 +27,8 @@ export const authController = new Elysia({ prefix: "/auth" })
 
         if (!isCodeValid) return status(400, "Invalid or expired 2FA code.");
       }
-      const token = await jwt.sign({ userId: user.id, role: user.role });
+      console.log(`id: ${user.id}, role: ${user.role}`);
+      const token = await jwt.sign({ id: user.id, role: user.role });
       return {
         token,
       };

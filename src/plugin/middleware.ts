@@ -2,10 +2,29 @@ import { Elysia } from "elysia";
 import { jwtService } from "./jwt";
 import { bearer } from "@elysiajs/bearer";
 import type { UserRole } from "@/generated/prisma";
+import type { AuthContext } from "@/auth/model";
 
-export const authenticated = new Elysia({ name: "auth-plugin" })
+export const authGuard = new Elysia({ name: "auth-guard" })
   .use(jwtService)
   .use(bearer())
+  .derive({ as: "scoped" }, async ({ bearer, jwt, status }) => {
+    if (!bearer) {
+      return status(401, {
+        error: "Authentication token not provided",
+        message: "You must provide a Bearer token in the Authorization header.",
+      });
+    }
+    const payload = await jwt.verify(bearer);
+
+    if (!payload) {
+      return status(401, {
+        error: "Invalid token",
+        message: "The token provided is invalid or expired",
+      });
+    }
+
+    return { user: { id: payload.id, role: payload.role } as AuthContext };
+  })
   .macro({
     requireRole: (role: UserRole) => ({
       async resolve({ bearer, jwt, status }) {
@@ -35,7 +54,7 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
             });
           }
           return {
-            user: payload,
+            user: { id: payload.id, role: payload.role } as AuthContext,
           };
         } catch (error) {
           return status(401, {
@@ -45,26 +64,4 @@ export const authenticated = new Elysia({ name: "auth-plugin" })
         }
       },
     }),
-  });
-
-export const auth = new Elysia()
-  .use(jwtService)
-  .use(bearer())
-  .derive({ as: "scoped" }, async ({ bearer, jwt, status }) => {
-    if (!bearer) {
-      return status(401, {
-        error: "Authentication token not provided",
-        message: "You must provide a Bearer token in the Authorization header.",
-      });
-    }
-    const payload = await jwt.verify(bearer);
-
-    if (!payload) {
-      return status(401, {
-        error: "Invalid token",
-        message: "The token provided is invalid or expired",
-      });
-    }
-
-    return { user: payload };
   });

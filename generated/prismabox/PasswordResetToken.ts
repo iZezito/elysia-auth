@@ -9,7 +9,7 @@ export const PasswordResetTokenPlain = t.Object(
     id: t.Integer(),
     token: t.String(),
     expiryDate: t.Date(),
-    userId: __nullable__(t.Integer()),
+    userId: __nullable__(t.String()),
   },
   { additionalProperties: false },
 );
@@ -19,7 +19,7 @@ export const PasswordResetTokenRelations = t.Object(
     user: __nullable__(
       t.Object(
         {
-          id: t.Integer(),
+          id: t.String(),
           name: t.String(),
           email: t.String(),
           role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
@@ -54,7 +54,7 @@ export const PasswordResetTokenRelationsInputCreate = t.Object(
         {
           connect: t.Object(
             {
-              id: t.Integer({ additionalProperties: false }),
+              id: t.String({ additionalProperties: false }),
             },
             { additionalProperties: false },
           ),
@@ -74,7 +74,7 @@ export const PasswordResetTokenRelationsInputUpdate = t.Partial(
           {
             connect: t.Object(
               {
-                id: t.Integer({ additionalProperties: false }),
+                id: t.String({ additionalProperties: false }),
               },
               { additionalProperties: false },
             ),
@@ -99,7 +99,7 @@ export const PasswordResetTokenWhere = t.Partial(
           id: t.Integer(),
           token: t.String(),
           expiryDate: t.Date(),
-          userId: t.Integer(),
+          userId: t.String(),
         },
         { additionalProperties: false },
       ),
@@ -113,13 +113,13 @@ export const PasswordResetTokenWhereUnique = t.Recursive(
       [
         t.Partial(
           t.Object(
-            { id: t.Integer(), userId: t.Integer() },
+            { id: t.Integer(), userId: t.String() },
             { additionalProperties: false },
           ),
           { additionalProperties: false },
         ),
         t.Union(
-          [t.Object({ id: t.Integer() }), t.Object({ userId: t.Integer() })],
+          [t.Object({ id: t.Integer() }), t.Object({ userId: t.String() })],
           { additionalProperties: false },
         ),
         t.Partial(
@@ -142,7 +142,7 @@ export const PasswordResetTokenWhereUnique = t.Recursive(
               id: t.Integer(),
               token: t.String(),
               expiryDate: t.Date(),
-              userId: t.Integer(),
+              userId: t.String(),
             },
             { additionalProperties: false },
           ),

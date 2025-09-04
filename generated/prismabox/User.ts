@@ -6,17 +6,13 @@ import { __nullable__ } from "./__nullable__";
 
 export const UserPlain = t.Object(
   {
-    id: t.Integer(),
+    id: t.String(),
     name: t.String(),
     email: t.String(),
     role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
       additionalProperties: false,
     }),
-    password: t.Optional(
-      t.String({
-        minLength: 6,
-      })
-    ),
+    password: t.Optional(t.String()),
     oauth2Provider: __nullable__(t.String()),
     emailVerified: __nullable__(t.Boolean()),
     twoFactorAuthenticationEnabled: __nullable__(t.Boolean()),
@@ -31,7 +27,7 @@ export const UserRelations = t.Object(
         {
           id: t.Integer(),
           title: __nullable__(t.String()),
-          authorId: t.Integer(),
+          authorId: t.String(),
         },
         { additionalProperties: false }
       ),
@@ -43,7 +39,7 @@ export const UserRelations = t.Object(
           id: t.Integer(),
           verificationToken: t.String(),
           expiryDate: t.Date(),
-          userId: t.Integer(),
+          userId: t.String(),
         },
         { additionalProperties: false }
       )
@@ -54,7 +50,7 @@ export const UserRelations = t.Object(
           id: t.Integer(),
           token: t.String(),
           expiryDate: t.Date(),
-          userId: __nullable__(t.Integer()),
+          userId: __nullable__(t.String()),
         },
         { additionalProperties: false }
       )
@@ -65,7 +61,7 @@ export const UserRelations = t.Object(
           id: t.Integer(),
           code: t.String(),
           expiryDate: t.Date(),
-          userId: t.Integer(),
+          userId: t.String(),
         },
         { additionalProperties: false }
       )
@@ -256,7 +252,7 @@ export const UserWhere = t.Partial(
           AND: t.Union([Self, t.Array(Self, { additionalProperties: false })]),
           NOT: t.Union([Self, t.Array(Self, { additionalProperties: false })]),
           OR: t.Array(Self, { additionalProperties: false }),
-          id: t.Integer(),
+          id: t.String(),
           name: t.String(),
           email: t.String(),
           role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
@@ -279,13 +275,13 @@ export const UserWhereUnique = t.Recursive(
       [
         t.Partial(
           t.Object(
-            { id: t.Integer(), email: t.String() },
+            { id: t.String(), email: t.String() },
             { additionalProperties: false }
           ),
           { additionalProperties: false }
         ),
         t.Union(
-          [t.Object({ id: t.Integer() }), t.Object({ email: t.String() })],
+          [t.Object({ id: t.String() }), t.Object({ email: t.String() })],
           { additionalProperties: false }
         ),
         t.Partial(
@@ -305,7 +301,7 @@ export const UserWhereUnique = t.Recursive(
         t.Partial(
           t.Object(
             {
-              id: t.Integer(),
+              id: t.String(),
               name: t.String(),
               email: t.String(),
               role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {

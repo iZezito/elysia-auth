@@ -1,20 +1,18 @@
 import { Elysia, t } from "elysia";
-import { PrismaClient } from "@/generated/prisma";
 import {
-  UserInputUpdate,
   UserPlain,
   UserPlainInputCreate,
   UserPlainInputUpdate,
 } from "@/generated/prismabox/User";
 import { UserService } from "./service";
-import { auth, authenticated } from "@/auth/plugin/middleware";
+import { authGuard } from "@/plugin/middleware";
 import { sendMail } from "@/lib/mail";
 import { renderResetPasswordEmail, renderVerifyEmail } from "@/emails/render";
 import { isBefore } from "date-fns";
-
-const prisma = new PrismaClient();
+import { paramModel } from "@/plugin/model";
 
 export const userController = new Elysia({ prefix: "/users" })
+  .use(paramModel)
   .post(
     "",
     async ({ body, status }) => {
@@ -32,19 +30,6 @@ export const userController = new Elysia({ prefix: "/users" })
     {
       body: UserPlainInputCreate,
       response: { 201: UserPlain },
-    }
-  )
-  .use(authenticated)
-  .get(
-    "/:id",
-    async ({ params: { id } }) => {
-      return await UserService.findById(id);
-    },
-    {
-      requireRole: "ADMIN",
-      params: t.Object({
-        id: t.Number(),
-      }),
     }
   )
   .get(
@@ -122,25 +107,34 @@ export const userController = new Elysia({ prefix: "/users" })
       }),
     }
   )
-  .use(auth)
+  .use(authGuard)
+  .get(
+    "/:id",
+    async ({ params: { id } }) => {
+      return await UserService.findById(id);
+    },
+    {
+      requireRole: "ADMIN",
+      params: "params-id",
+    }
+  )
   .put(
     "/:id",
     async ({ status, body, user, params: { id } }) => {
-      if (id !== user.userId) return status(403);
+      console.log(`id do jwt: ${user}, id da requisição: ${id}`);
+      if (id !== user.id) return status(403);
 
-      return await UserService.update(body, user.userId);
+      return await UserService.update(body, user.id);
     },
     {
       body: UserPlainInputUpdate,
-      params: t.Object({
-        id: t.Number(),
-      }),
+      params: "params-id",
     }
   )
   .get(
     "",
     async ({ status, user }) => {
-      const usuario = await UserService.findById(+user.userId);
+      const usuario = await UserService.findById(user.id);
 
       if (!usuario) return status(404, "User not found");
 

@@ -5,7 +5,7 @@ import { __transformDate__ } from "./__transformDate__";
 import { __nullable__ } from "./__nullable__";
 
 export const PostPlain = t.Object(
-  { id: t.Integer(), title: __nullable__(t.String()), authorId: t.Integer() },
+  { id: t.Integer(), title: __nullable__(t.String()), authorId: t.String() },
   { additionalProperties: false },
 );
 
@@ -13,7 +13,7 @@ export const PostRelations = t.Object(
   {
     author: t.Object(
       {
-        id: t.Integer(),
+        id: t.String(),
         name: t.String(),
         email: t.String(),
         role: t.Union([t.Literal("DEFAULT"), t.Literal("ADMIN")], {
@@ -46,7 +46,7 @@ export const PostRelationsInputCreate = t.Object(
       {
         connect: t.Object(
           {
-            id: t.Integer({ additionalProperties: false }),
+            id: t.String({ additionalProperties: false }),
           },
           { additionalProperties: false },
         ),
@@ -64,7 +64,7 @@ export const PostRelationsInputUpdate = t.Partial(
         {
           connect: t.Object(
             {
-              id: t.Integer({ additionalProperties: false }),
+              id: t.String({ additionalProperties: false }),
             },
             { additionalProperties: false },
           ),
@@ -86,7 +86,7 @@ export const PostWhere = t.Partial(
           OR: t.Array(Self, { additionalProperties: false }),
           id: t.Integer(),
           title: t.String(),
-          authorId: t.Integer(),
+          authorId: t.String(),
         },
         { additionalProperties: false },
       ),
@@ -121,7 +121,7 @@ export const PostWhereUnique = t.Recursive(
         ),
         t.Partial(
           t.Object(
-            { id: t.Integer(), title: t.String(), authorId: t.Integer() },
+            { id: t.Integer(), title: t.String(), authorId: t.String() },
             { additionalProperties: false },
           ),
         ),

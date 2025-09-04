@@ -1,8 +1,8 @@
 import { PrismaClient } from "@/generated/prisma";
 import { password, randomUUIDv7 } from "bun";
-import { status } from "elysia";
 import type { UserCreate, UserUpdate } from "./model";
 import { addDays, addHours, isAfter } from "date-fns";
+import { NotFoundError } from "@/error";
 
 const prisma = new PrismaClient({
   omit: {
@@ -27,7 +27,7 @@ export abstract class UserService {
     });
   }
 
-  static async updatePassword(userId: number, newPassword: string) {
+  static async updatePassword(userId: string, newPassword: string) {
     const bcryptHash = await password.hash(newPassword, {
       algorithm: "bcrypt",
       cost: 10,
@@ -40,23 +40,23 @@ export abstract class UserService {
     });
   }
 
-  static async findById(id: number) {
+  static async findById(id: string) {
     return prisma.user
       .findUniqueOrThrow({
         where: { id },
       })
       .catch(() => {
-        throw status(404, "User not found!");
+        throw new NotFoundError("User not found!");
       });
   }
 
-  static async update(body: UserUpdate, userId: number) {
+  static async update(body: UserUpdate, userId: string) {
     const userEntity = await prisma.user
       .findUniqueOrThrow({
         where: { id: userId },
       })
       .catch(() => {
-        throw status(404, "User not found!");
+        throw new NotFoundError("User not found!");
       });
 
     return await prisma.user.update({
@@ -70,7 +70,7 @@ export abstract class UserService {
     });
   }
 
-  static async createVerificatioEmailToken(userId: number) {
+  static async createVerificatioEmailToken(userId: string) {
     const verificationToken = randomUUIDv7();
     await prisma.emailVerification.create({
       data: {
@@ -82,7 +82,7 @@ export abstract class UserService {
     return verificationToken;
   }
 
-  static async createPasswordResetToken(userId: number) {
+  static async createPasswordResetToken(userId: string) {
     const token = randomUUIDv7();
     await prisma.passwordResetToken.create({
       data: {
@@ -106,7 +106,7 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw status(404, "Email verification not found for this token");
+        throw new NotFoundError("Email verification not found for this token");
       });
 
     if (
@@ -135,7 +135,7 @@ export abstract class UserService {
         },
       })
       .catch(() => {
-        throw status(404, "Password Reset not found for this token");
+        throw new NotFoundError("Password Reset not found for this token");
       });
   }
 }

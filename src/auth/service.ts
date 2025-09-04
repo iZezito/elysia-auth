@@ -3,9 +3,9 @@ import { PrismaClient } from "@/generated/prisma";
 import { password } from "bun";
 import { renderOtpEmail } from "@/emails/render";
 import { sendMail } from "@/lib/mail";
-import type { User } from "@/modules/user/model";
+import { type User } from "@/modules/user/model";
 import { addHours, isAfter } from "date-fns";
-import { status } from "elysia";
+import { BadCredentialsError } from "@/error";
 
 const prisma = new PrismaClient();
 
@@ -16,10 +16,7 @@ export abstract class AuthService {
         where: { email: body.email },
       })
       .catch(() => {
-        throw status(
-          401,
-          "Invalid credentials. Please check your email and password and try again."
-        );
+        throw new BadCredentialsError();
       });
 
     const verifySenha = await password.verify(
@@ -28,10 +25,7 @@ export abstract class AuthService {
     );
 
     if (!verifySenha) {
-      throw status(
-        401,
-        "Invalid credentials. Please check your email and password and try again."
-      );
+      throw new BadCredentialsError();
     }
 
     return userEntity;
@@ -58,7 +52,7 @@ export abstract class AuthService {
     sendMail(user.email, "Two-Factor Authentication Code", html);
   }
 
-  static async validate2FACode(userId: number, code: string) {
+  static async validate2FACode(userId: string, code: string) {
     const twoFactorAuth = await prisma.twoFactorAuthentication.findUnique({
       where: { userId },
     });

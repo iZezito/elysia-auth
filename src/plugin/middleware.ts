@@ -27,41 +27,23 @@ export const authGuard = new Elysia({ name: "auth-guard" })
   })
   .macro({
     requireRole: (role: UserRole) => ({
-      async resolve({ bearer, jwt, status }) {
-        if (!bearer) {
+      async resolve({ user, status }) {
+        if (!user) {
           return status(401, {
-            error: "Authentication token not provided",
-            message:
-              "You must provide a Bearer token in the Authorization header.",
+            error: "Authentication required",
+            message: "You must be authenticated to access this route",
           });
         }
 
-        try {
-          const payload = await jwt.verify(bearer);
-
-          if (!payload) {
-            return status(401, {
-              error: "Invalid token",
-              message: "The token provided is invalid or expired",
-            });
-          }
-          console.log("role: ", payload.role);
-
-          if (payload.role !== role) {
-            return status(403, {
-              error: "Forbidden",
-              message: "You do not have access to this feature",
-            });
-          }
-          return {
-            user: { id: payload.id, role: payload.role } as AuthContext,
-          };
-        } catch (error) {
-          return status(401, {
-            error: "Error verifying token",
-            message: "Failed to verify authentication token",
+        if (user.role !== role) {
+          return status(403, {
+            error: "Forbidden",
+            message: "You do not have access to this feature",
           });
         }
+        return {
+          user: { user },
+        };
       },
     }),
   });

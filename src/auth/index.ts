@@ -27,7 +27,6 @@ export const authController = new Elysia({ prefix: "/auth" })
 
         if (!isCodeValid) return status(400, "Invalid or expired 2FA code.");
       }
-      console.log(`id: ${user.id}, role: ${user.role}`);
       const token = await jwt.sign({ id: user.id, role: user.role });
       return {
         token,
@@ -82,7 +81,7 @@ export const authController = new Elysia({ prefix: "/auth" })
         }
 
         const token = await jwt.sign({
-          userId: userEntity.id,
+          id: userEntity.id,
           role: userEntity.role,
         });
 

@@ -114,7 +114,7 @@ export const userController = new Elysia({ prefix: "/users" })
       return await UserService.findById(id);
     },
     {
-      requireRole: "ADMIN",
+      requireRole: "DEFAULT",
       params: "params-id",
     }
   )

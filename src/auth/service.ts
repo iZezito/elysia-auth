@@ -6,6 +6,7 @@ import { sendMail } from "@/lib/mail";
 import { type User } from "@/modules/user/model";
 import { addHours, isAfter } from "date-fns";
 import { BadCredentialsError } from "@/error";
+import { status } from "elysia";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +17,11 @@ export abstract class AuthService {
         where: { email: body.email },
       })
       .catch(() => {
-        throw new BadCredentialsError();
+        // throw new BadCredentialsError();
+        throw status(
+          401,
+          "Invalid credentials. Please check your email and password and try again."
+        );
       });
 
     const verifySenha = await password.verify(

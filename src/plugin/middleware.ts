@@ -3,43 +3,40 @@ import { jwtService } from "./jwt";
 import { bearer } from "@elysiajs/bearer";
 import type { UserRole } from "@/generated/prisma";
 import type { AuthContext } from "@/auth/model";
+import { ForbiddenError, UnauthorizedError } from "@/error";
 
 export const authGuard = new Elysia({ name: "auth-guard" })
   .use(jwtService)
   .use(bearer())
-  .derive({ as: "scoped" }, async ({ bearer, jwt, status }) => {
-    if (!bearer) {
-      return status(401, {
-        error: "Authentication token not provided",
-        message: "You must provide a Bearer token in the Authorization header.",
-      });
+  .derive({ as: "scoped" }, async ({ bearer, jwt, cookie }) => {
+    const token = cookie.auth.value;
+    if (!token) {
+      throw new UnauthorizedError("Authentication token not provided!");
     }
-    const payload = await jwt.verify(bearer);
+
+    // if (!bearer) {
+    //    throw new UnauthorizedError("Authentication token not provided")
+    // }
+    const payload = await jwt.verify(token);
+    // const payload = await jwt.verify(bearer);
 
     if (!payload) {
-      return status(401, {
-        error: "Invalid token",
-        message: "The token provided is invalid or expired",
-      });
+      throw new UnauthorizedError("The token provided is invalid or expired!");
     }
 
     return { user: { id: payload.id, role: payload.role } as AuthContext };
   })
   .macro({
     requireRole: (role: UserRole) => ({
-      async resolve({ user, status }) {
+      async resolve({ user }) {
         if (!user) {
-          return status(401, {
-            error: "Authentication required",
-            message: "You must be authenticated to access this route",
-          });
+          throw new UnauthorizedError(
+            "You must be authenticated to access this route"
+          );
         }
 
         if (user.role !== role) {
-          return status(403, {
-            error: "Forbidden",
-            message: "You do not have access to this feature",
-          });
+          throw new ForbiddenError("You do not have access to this feature");
         }
         return {
           user: { user },

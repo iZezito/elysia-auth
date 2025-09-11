@@ -121,7 +121,6 @@ export const userController = new Elysia({ prefix: "/users" })
   .put(
     "/:id",
     async ({ status, body, user, params: { id } }) => {
-      console.log(`id do jwt: ${user}, id da requisição: ${id}`);
       if (id !== user.id) return status(403);
 
       return await UserService.update(body, user.id);

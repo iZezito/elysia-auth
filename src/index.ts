@@ -7,10 +7,10 @@ import { authController } from "@/auth";
 const app = new Elysia()
   .use(
     cors({
-      credentials: true,
       origin: "http://localhost:5173",
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
     })
   )
   .use(swagger())

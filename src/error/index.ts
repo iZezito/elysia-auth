@@ -9,14 +9,31 @@ export class CustomizedError extends Error {
   toResponse() {
     return Response.json(
       {
-        error: this.message,
+        message: this.message,
         code: this.status,
         timestamp: new Date().toLocaleString(),
       },
       {
         status: this.status,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": process.env.CLIENT_URL!,
+          "Access-Control-Allow-Credentials": "true",
+        },
       }
     );
+  }
+}
+
+export class UnauthorizedError extends CustomizedError {
+  constructor(message: string) {
+    super(message, 401);
+  }
+}
+
+export class ForbiddenError extends CustomizedError {
+  constructor(message: string) {
+    super(message, 403);
   }
 }
 

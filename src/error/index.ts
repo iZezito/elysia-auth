@@ -6,23 +6,23 @@ export class CustomizedError extends Error {
     super(message);
   }
 
-  toResponse() {
-    return Response.json(
-      {
-        message: this.message,
-        code: this.status,
-        timestamp: new Date().toLocaleString(),
-      },
-      {
-        status: this.status,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": process.env.CLIENT_URL!,
-          "Access-Control-Allow-Credentials": "true",
-        },
-      }
-    );
-  }
+  // toResponse() {
+  //   return Response.json(
+  //     {
+  //       message: this.message,
+  //       code: this.status,
+  //       timestamp: new Date().toLocaleString(),
+  //     },
+  //     {
+  //       status: this.status,
+  //       // headers: {
+  //       //   "Content-Type": "application/json",
+  //       //   "Access-Control-Allow-Origin": process.env.CLIENT_URL!,
+  //       //   "Access-Control-Allow-Credentials": "true",
+  //       // },
+  //     }
+  //   );
+  // }
 }
 
 export class UnauthorizedError extends CustomizedError {

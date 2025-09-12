@@ -113,7 +113,7 @@ export const authController = new Elysia({ prefix: "/auth" })
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
           path: "/",
-          maxAge: 60 * 60 * 24, // 1 dia
+          maxAge: 60 * 60 * 24,
         });
 
         return redirect(`${process.env.CLIENT_URL}/profile`);
@@ -134,56 +134,3 @@ export const authController = new Elysia({ prefix: "/auth" })
       }),
     }
   );
-// .get(
-//   "/oauth/google/callback",
-//   async ({ query: { code, state }, status, jwt, pkceStore, redirect }) => {
-//     const sessionData = pkceStore.get(state);
-//     if (!sessionData) {
-//       return status(400, { error: "Invalid state" });
-//     }
-
-//     try {
-//       const tokens = await google.validateAuthorizationCode(
-//         code,
-//         sessionData.codeVerifier
-//       );
-
-//       const accessToken = tokens.accessToken();
-//       const idToken = tokens.idToken();
-//       const claims = arctic.decodeIdToken(idToken) as GoogleIdTokenClaims;
-
-//       let userEntity = await UserService.findByEmail(claims.email);
-//       if (!userEntity) {
-//         userEntity = await UserService.save({
-//           password: "ttttttttttttt",
-//           oauth2Provider: "google",
-//           email: claims.email,
-//           name: claims.name,
-//         });
-//       }
-
-//       const token = await jwt.sign({
-//         id: userEntity.id,
-//         role: userEntity.role,
-//       });
-
-//       return redirect(
-//         `${process.env.CLIENT_URL}/oauth-success?token=${token}`
-//       );
-//     } catch (e) {
-//       if (e instanceof arctic.OAuth2RequestError) {
-//         return status(400, { error: "Invalid authorization code" });
-//       }
-//       if (e instanceof arctic.ArcticFetchError) {
-//         return status(500, { error: "Fetch error" });
-//       }
-//       return status(500, { error: "Unexpected error" });
-//     }
-//   },
-//   {
-//     query: t.Object({
-//       code: t.String(),
-//       state: t.String(),
-//     }),
-//   }
-// );

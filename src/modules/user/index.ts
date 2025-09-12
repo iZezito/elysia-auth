@@ -114,7 +114,7 @@ export const userController = new Elysia({ prefix: "/users" })
       return await UserService.findById(id);
     },
     {
-      requireRole: "DEFAULT",
+      requireRole: "ADMIN",
       params: "params-id",
     }
   )
@@ -132,17 +132,10 @@ export const userController = new Elysia({ prefix: "/users" })
   )
   .get(
     "",
-    async ({ status, user }) => {
-      const usuario = await UserService.findById(user.id);
-
-      if (!usuario) return status(404, "User not found");
-
-      return usuario;
+    async ({ user }) => {
+      return await UserService.findById(user.id);
     },
     {
-      response: {
-        200: UserPlain,
-        404: t.String(),
-      },
+      response: UserPlain,
     }
   );

@@ -35,10 +35,10 @@ export const authController = new Elysia({ prefix: "/auth" })
       cookie.auth.set({
         value: token,
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
-        maxAge: 60 * 60 * 24,
+        maxAge: 60 * 60 * 48,
       });
 
       return {
@@ -113,7 +113,7 @@ export const authController = new Elysia({ prefix: "/auth" })
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
           path: "/",
-          maxAge: 60 * 60 * 24,
+          maxAge: 60 * 60 * 48,
         });
 
         return redirect(`${process.env.CLIENT_URL}/profile`);

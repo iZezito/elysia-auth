@@ -1,4 +1,4 @@
-FROM oven/bun AS build
+FROM oven/bun:alpine AS build
 
 WORKDIR /app
 
@@ -8,8 +8,15 @@ COPY bun.lock bun.lock
 RUN bun install
 
 COPY ./src ./src
-COPY ./generated ./generated
+COPY ./prisma ./prisma
+
 COPY tsconfig.json tsconfig.json
+COPY .env.prod .env
+
+RUN bunx prisma generate
+
+COPY ./generated/prismabox ./generated/prismabox
+
 
 ENV NODE_ENV=production
 
@@ -20,14 +27,26 @@ RUN bun build \
     --outfile server \
     src/index.ts
 
-FROM gcr.io/distroless/base
+
+FROM build
 
 WORKDIR /app
 
 COPY --from=build /app/server server
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+
+COPY --from=build /app/prisma /app/prisma
+COPY --from=build /app/generated /app/generated
 
 ENV NODE_ENV=production
 
 CMD ["./server"]
 
 EXPOSE 3000
+
+
+
+
+
+

@@ -77,13 +77,20 @@ export abstract class UserService {
 
   static async createPasswordResetToken(userId: string) {
     const token = randomUUIDv7();
-    await db.passwordResetToken.create({
-      data: {
+
+    await db.passwordResetToken.upsert({
+      where: { userId },
+      update: {
+        token,
+        expiryDate: addHours(new Date(), 1),
+      },
+      create: {
         token,
         userId,
         expiryDate: addHours(new Date(), 1),
       },
     });
+
     return token;
   }
 

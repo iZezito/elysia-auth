@@ -33,23 +33,21 @@ export abstract class AuthService {
   }
 
   static async send2FACode(user: User) {
-    const twoFactorAuthentication = await db.twoFactorAuthentication.findUnique(
-      {
-        where: { userId: user.id },
-      }
-    );
-    if (twoFactorAuthentication !== null)
-      await db.twoFactorAuthentication.delete({
-        where: { id: twoFactorAuthentication.id },
-      });
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await db.twoFactorAuthentication.create({
-      data: {
+
+    await db.twoFactorAuthentication.upsert({
+      where: { userId: user.id },
+      update: {
+        code,
+        expiryDate: addHours(new Date(), 2),
+      },
+      create: {
         userId: user.id,
         code,
         expiryDate: addHours(new Date(), 2),
       },
     });
+
     const html = renderOtpEmail(code);
     sendMail(user.email, "Two-Factor Authentication Code", html);
   }

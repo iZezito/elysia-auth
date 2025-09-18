@@ -3,14 +3,7 @@ import { password, randomUUIDv7 } from "bun";
 import type { UserCreate, UserUpdate } from "./model";
 import { addDays, addHours, isAfter } from "date-fns";
 import { NotFoundError } from "@/error";
-
-const prisma = new PrismaClient({
-  omit: {
-    user: {
-      password: true,
-    },
-  },
-});
+import { db } from "@/lib/db";
 
 export abstract class UserService {
   static async save(user: UserCreate) {
@@ -18,7 +11,7 @@ export abstract class UserService {
       algorithm: "bcrypt",
       cost: 10,
     });
-    return prisma.user.create({
+    return db.user.create({
       data: {
         ...user,
         emailVerified: false,
@@ -32,7 +25,7 @@ export abstract class UserService {
       algorithm: "bcrypt",
       cost: 10,
     });
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
       data: {
         password: bcryptHash,
@@ -41,7 +34,7 @@ export abstract class UserService {
   }
 
   static async findById(id: string) {
-    return prisma.user
+    return db.user
       .findUniqueOrThrow({
         where: { id },
       })
@@ -51,7 +44,7 @@ export abstract class UserService {
   }
 
   static async update(body: UserUpdate, userId: string) {
-    const userEntity = await prisma.user
+    const userEntity = await db.user
       .findUniqueOrThrow({
         where: { id: userId },
       })
@@ -59,7 +52,7 @@ export abstract class UserService {
         throw new NotFoundError("User not found!");
       });
 
-    return await prisma.user.update({
+    return await db.user.update({
       where: {
         id: userEntity.id,
       },
@@ -72,7 +65,7 @@ export abstract class UserService {
 
   static async createVerificatioEmailToken(userId: string) {
     const verificationToken = randomUUIDv7();
-    await prisma.emailVerification.create({
+    await db.emailVerification.create({
       data: {
         verificationToken,
         userId,
@@ -84,7 +77,7 @@ export abstract class UserService {
 
   static async createPasswordResetToken(userId: string) {
     const token = randomUUIDv7();
-    await prisma.passwordResetToken.create({
+    await db.passwordResetToken.create({
       data: {
         token,
         userId,
@@ -95,11 +88,11 @@ export abstract class UserService {
   }
 
   static async findByEmail(email: string) {
-    return await prisma.user.findUnique({ where: { email } });
+    return await db.user.findUnique({ where: { email } });
   }
 
   static async validateEmail(token: string) {
-    const emailVerification = await prisma.emailVerification
+    const emailVerification = await db.emailVerification
       .findUniqueOrThrow({
         where: {
           verificationToken: token,
@@ -113,13 +106,13 @@ export abstract class UserService {
       emailVerification !== null &&
       isAfter(emailVerification.expiryDate, new Date())
     ) {
-      await prisma.user.update({
+      await db.user.update({
         where: { id: emailVerification.userId },
         data: {
           emailVerified: true,
         },
       });
-      await prisma.emailVerification.delete({
+      await db.emailVerification.delete({
         where: { id: emailVerification.id },
       });
       return true;
@@ -128,7 +121,7 @@ export abstract class UserService {
   }
 
   static async findByToken(token: string) {
-    return await prisma.passwordResetToken
+    return await db.passwordResetToken
       .findFirstOrThrow({
         where: {
           token,

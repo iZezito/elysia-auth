@@ -132,7 +132,7 @@ export const userController = new Elysia({ prefix: "/users" })
   )
   .get(
     "",
-  async ({ user }) => {
+    async ({ user }) => {
       return await UserService.findById(user.id);
     },
     {

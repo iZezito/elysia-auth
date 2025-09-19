@@ -32,8 +32,8 @@ FROM gcr.io/distroless/base
 WORKDIR /app
 
 COPY --from=build /app/server server
-# COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
-# COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
 
 # COPY --from=build /app/prisma /app/prisma
 # COPY --from=build /app/generated /app/generated

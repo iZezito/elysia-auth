@@ -41,7 +41,10 @@ COPY --from=build /app/server server
 # COPY --from=build /app/prisma /app/prisma
 # COPY --from=build /app/generated /app/generated
 
-CMD ["chmod +x ./server"]
+COPY --from=build /app/generated/prisma ./generated/prisma
+COPY --from=build /app/node_modules ./node_modules
+
+
 
 ENV NODE_ENV=production
 

@@ -16,6 +16,8 @@ COPY ./generated/prismabox ./generated/prismabox
 
 ENV NODE_ENV=production
 
+RUN bunx prisma migrate deploy
+
 RUN bun build \
     --compile \
     --minify-whitespace \

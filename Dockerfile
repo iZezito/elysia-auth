@@ -39,6 +39,8 @@ WORKDIR /app
 # COPY --from=build /app/prisma /app/prisma
 # COPY --from=build /app/generated /app/generated
 
+CMD ["chmod +x ./server"]
+
 ENV NODE_ENV=production
 
 CMD ["./server"]

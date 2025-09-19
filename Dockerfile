@@ -26,7 +26,8 @@ RUN bun build \
 
 
 # Runtime com debian-slim (usa OpenSSL 1.1.x)
-FROM debian:bullseye-slim
+# FROM debian:bullseye-slim
+FROM gcr.io/distroless/cc
 
 WORKDIR /app
 

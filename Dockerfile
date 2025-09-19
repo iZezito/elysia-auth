@@ -14,6 +14,8 @@ RUN bunx prisma generate
 
 COPY ./generated/prismabox ./generated/prismabox
 
+COPY ./generated/prisma ./generated/prisma
+
 ENV NODE_ENV=production
 
 RUN bun build \

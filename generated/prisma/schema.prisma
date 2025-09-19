@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,13 +9,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator prismabox {
-  provider                    = "prismabox"
-  typeboxImportDependencyName = "elysia"
-  typeboxImportVariableName   = "t"
-  inputModel                  = true
-  output                      = "../generated/prismabox"
-}
+// generator prismabox {
+//   provider = "prismabox"
+//   typeboxImportDependencyName = "elysia"
+//   typeboxImportVariableName = "t"
+//   inputModel = true
+//   output   = "../generated/prismabox"
+// }
 
 enum UserRole {
   DEFAULT

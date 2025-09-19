@@ -35,12 +35,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.13.0
- * Query Engine version: 361e86d0ea4987e9f53a565309b3eed797a6bcbd
+ * Prisma Client JS version: 6.16.0
+ * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
  */
 Prisma.prismaVersion = {
-  client: "6.13.0",
-  engine: "361e86d0ea4987e9f53a565309b3eed797a6bcbd"
+  client: "6.16.0",
+  engine: "1c57fdcd7e44b29b9313256c76699e91c3ac3c43"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -179,6 +179,14 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -190,12 +198,13 @@ const config = {
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
-  "clientVersion": "6.13.0",
-  "engineVersion": "361e86d0ea4987e9f53a565309b3eed797a6bcbd",
+  "clientVersion": "6.16.0",
+  "engineVersion": "1c57fdcd7e44b29b9313256c76699e91c3ac3c43",
   "datasourceNames": [
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -204,8 +213,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\ngenerator prismabox {\n  provider                    = \"prismabox\"\n  typeboxImportDependencyName = \"elysia\"\n  typeboxImportVariableName   = \"t\"\n  inputModel                  = true\n  output                      = \"../generated/prismabox\"\n}\n\nenum UserRole {\n  DEFAULT\n  ADMIN\n}\n\nmodel User {\n  id                             String   @id @default(cuid())\n  name                           String\n  email                          String   @unique\n  role                           UserRole @default(DEFAULT)\n  password                       String\n  oauth2Provider                 String?\n  emailVerified                  Boolean? @default(false)\n  twoFactorAuthenticationEnabled Boolean? @default(false)\n\n  posts                   Post[]\n  emailVerification       EmailVerification?\n  passwordResetToken      PasswordResetToken?\n  twoFactorAuthentication TwoFactorAuthentication?\n}\n\nmodel Post {\n  id       Int     @id @default(autoincrement())\n  title    String?\n  authorId String\n  author   User    @relation(fields: [authorId], references: [id])\n}\n\nmodel EmailVerification {\n  id                Int      @id @default(autoincrement())\n  verificationToken String   @unique\n  expiryDate        DateTime\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"email_verifications\")\n}\n\nmodel PasswordResetToken {\n  id         Int      @id @default(autoincrement())\n  token      String\n  expiryDate DateTime\n\n  userId String? @unique\n  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"password_reset_tokens\")\n}\n\nmodel TwoFactorAuthentication {\n  id         Int      @id @default(autoincrement())\n  code       String\n  expiryDate DateTime\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"two_factor_authentication\")\n}\n",
-  "inlineSchemaHash": "f886d4a6297a07c0feb6751bf55b516fb74119fdbea55b281a2efb004f5131a1",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-1.1.x\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// generator prismabox {\n//   provider = \"prismabox\"\n//   typeboxImportDependencyName = \"elysia\"\n//   typeboxImportVariableName = \"t\"\n//   inputModel = true\n//   output   = \"../generated/prismabox\"\n// }\n\nenum UserRole {\n  DEFAULT\n  ADMIN\n}\n\nmodel User {\n  id                             String   @id @default(cuid())\n  name                           String\n  email                          String   @unique\n  role                           UserRole @default(DEFAULT)\n  password                       String\n  oauth2Provider                 String?\n  emailVerified                  Boolean? @default(false)\n  twoFactorAuthenticationEnabled Boolean? @default(false)\n\n  posts                   Post[]\n  emailVerification       EmailVerification?\n  passwordResetToken      PasswordResetToken?\n  twoFactorAuthentication TwoFactorAuthentication?\n}\n\nmodel Post {\n  id       Int     @id @default(autoincrement())\n  title    String?\n  authorId String\n  author   User    @relation(fields: [authorId], references: [id])\n}\n\nmodel EmailVerification {\n  id                Int      @id @default(autoincrement())\n  verificationToken String   @unique\n  expiryDate        DateTime\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"email_verifications\")\n}\n\nmodel PasswordResetToken {\n  id         Int      @id @default(autoincrement())\n  token      String\n  expiryDate DateTime\n\n  userId String? @unique\n  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"password_reset_tokens\")\n}\n\nmodel TwoFactorAuthentication {\n  id         Int      @id @default(autoincrement())\n  code       String\n  expiryDate DateTime\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"two_factor_authentication\")\n}\n",
+  "inlineSchemaHash": "eeb7b70cee11450679c81c6e4c1739868edd1a22d467c56917fbbebaf43a96cc",
   "copyEngine": true
 }
 
@@ -246,6 +255,14 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-1.1.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/prisma/schema.prisma")
